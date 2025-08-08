@@ -18,7 +18,11 @@ class DatabaseHelper {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, 
+    version: 1, 
+    onCreate: _createDB,
+    onUpgrade: _onUpgrade
+    );
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -50,5 +54,19 @@ class DatabaseHelper {
     ''');
 
     await db.insert('settings', {'monthlyTarget': 2000.0});
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < newVersion) {
+      // Add migration logic for future versions
+    }
+  }
+
+  Future<void> close() async {
+    final db = _database;
+    if (db != null) {
+      await db.close();
+      _database = null;
+    }
   }
 }
