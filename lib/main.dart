@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:home_budget/core/constants/index.dart';
+import 'package:home_budget/features/home/presentation/screens/home_screen.dart';
+import 'package:home_budget/features/home/presentation/screens/splash_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,13 +13,21 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Home Budgeting App',
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      child: MaterialApp(
+          title: 'Home Budgeting App',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
+          initialRoute: AppRoute.splashScreen,
+          routes: {
+              AppRoute.splashScreen: (context) => SplashScreen(),
+              AppRoute.homeScreen: (context) => HomeScreen()
+          },
       ),
     );
   }
