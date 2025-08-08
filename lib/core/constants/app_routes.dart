@@ -1,7 +1,9 @@
 class AppRoute {
-  static const String splashScreen = '/';
-  static const String homeScreen = '/home';
-  static const String budgetScreen = '/budget';
-  static const String expenseScreen = '/expense';
-
+  static const String splash = '/';
+  static const String home = '/home';
+  static const String budget = '/budget';
+  static const String budgetForm = '/budget_form';
+  static const String expense = '/expense';
+  static const String expenseForm = '/expense_form';
+  static const String guide = '/guide';
 }

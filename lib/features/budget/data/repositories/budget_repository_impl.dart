@@ -22,6 +22,22 @@ class BudgetRepositoryImpl implements BudgetRepository {
   }
 
   @override
+  Future<Budget?> getBudgetById(int id) async {
+    final db = await _dbHelper.database;
+    final result = await db.query(
+      tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (result.isNotEmpty) {
+      return BudgetModel.fromMap(result.first);
+    }
+    return null;
+  }
+
+
+  @override
   Future<int> addBudget(Budget budget) async {
     try {
       final db = await _dbHelper.database;
@@ -58,4 +74,14 @@ class BudgetRepositoryImpl implements BudgetRepository {
     }
   }
 
+  @override
+  Future<List<Budget>> getHolidayBudgets() async {
+    final db = await _dbHelper.database;
+    final result = await db.query(
+      tableName,
+      where: 'isHoliday = ?',
+      whereArgs: [1],
+    );
+    return result.map((map) => BudgetModel.fromMap(map)).toList();
+  }
 }

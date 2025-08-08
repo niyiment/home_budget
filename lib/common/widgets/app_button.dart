@@ -22,7 +22,7 @@ class AppButton extends StatelessWidget {
     super.key,
     this.onPressed,
     required this.text,
-    required this.isLoading,
+    this.isLoading = false,
     this.icon,
     this.backgroundColor,
     this.textColor,
@@ -34,7 +34,7 @@ class AppButton extends StatelessWidget {
     this.border,
   });
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final isDisabled = onPressed == null || isLoading;
 
@@ -54,7 +54,7 @@ class AppButton extends StatelessWidget {
                           (gradient?.colors.first ??
                                   backgroundColor ??
                                   AppColors.primary)
-                              .withOpacity(0.3),
+                              .withValues(alpha: 0.3),
                       blurRadius: 12.r,
                       spreadRadius: 0,
                       offset: const Offset(0, 4),
@@ -108,7 +108,6 @@ class AppButton extends StatelessWidget {
   }
 }
 
-
 class AppButtonOutlined extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
@@ -152,7 +151,7 @@ class AppButtonOutlined extends StatelessWidget {
   }
 }
 
-class AppButtonText extends StatelessWidget {
+class AppTextButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
   final IconData? icon;
@@ -160,7 +159,7 @@ class AppButtonText extends StatelessWidget {
   final double? fontSize;
   final FontWeight? fontWeight;
 
-  const AppButtonText({
+  const AppTextButton({
     super.key,
     required this.onPressed,
     required this.text,
@@ -205,5 +204,3 @@ class AppButtonText extends StatelessWidget {
     );
   }
 }
-
-
