@@ -40,7 +40,7 @@ class AppButton extends StatelessWidget {
 
     return Container(
       width: width ?? double.infinity,
-      height: height ?? 56.h,
+      height: height ?? 40.h,
       decoration: BoxDecoration(
         gradient: isDisabled ? null : gradient ?? AppColors.primaryGradient,
         color: isDisabled ? AppColors.border : backgroundColor,
@@ -69,7 +69,7 @@ class AppButton extends StatelessWidget {
           onTap: isDisabled ? null : onPressed,
           borderRadius: BorderRadius.circular(borderRadius ?? 12.r),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

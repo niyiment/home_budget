@@ -20,10 +20,10 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final String? helperText;
-  void Function(String?)? onSaved;
-  String? Function(String?)? validator;
+  final void Function(String?)? onSaved;
+  final String? Function(String?)? validator;
 
-  AppTextField({
+  const AppTextField({
     super.key,
     this.controller,
     this.hintText,
@@ -41,7 +41,7 @@ class AppTextField extends StatelessWidget {
     this.onTap,
     this.helperText,
     this.onSaved,
-    this.validator
+    this.validator,
   });
 
   @override
@@ -60,7 +60,7 @@ class AppTextField extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
         ],
-       TextFormField(
+        TextFormField(
           controller: controller,
           decoration: InputDecoration(
             hintText: hintText,
@@ -110,7 +110,7 @@ class AppTextField extends StatelessWidget {
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(
-                color: AppColors.border.withOpacity(0.5),
+                color: AppColors.border.withValues(alpha:0.5),
                 width: 1.w,
               ),
             ),

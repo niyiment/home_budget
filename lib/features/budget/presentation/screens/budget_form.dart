@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:home_budget/common/widgets/app_button.dart';
-import 'package:home_budget/common/widgets/app_text_field.dart';
 import 'package:home_budget/core/constants/index.dart';
-import 'package:home_budget/features/budget/presentation/providers/budget_provider.dart';
-
+import '../../../../common/widgets/app_button.dart';
 import '../../domain/entities/budget.dart';
-
-
 
 class BudgetFormScreen extends ConsumerStatefulWidget {
   final Budget? budget;
+  final Function(Budget) onSave;
 
-  const BudgetFormScreen({super.key, this.budget});
+  const BudgetFormScreen({super.key, this.budget, required this.onSave});
 
   @override
   ConsumerState<BudgetFormScreen> createState() => _BudgetFormScreenState();
@@ -43,17 +39,7 @@ class _BudgetFormScreenState extends ConsumerState<BudgetFormScreen> {
     super.dispose();
   }
 
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  Future<void> saveBudget() async {
+  void _saveBudget() {
     if (_formKey.currentState!.validate()) {
       final budget = Budget(
         id: widget.budget?.id,
@@ -61,99 +47,83 @@ class _BudgetFormScreenState extends ConsumerState<BudgetFormScreen> {
         amount: double.parse(_amountController.text),
         isHoliday: _isHoliday,
       );
-
-      if (widget.budget == null) {
-        ref.read(budgetNotifierProvider.notifier).addBudget(budget);
-        _showSuccessSnackBar('Budget saved successfully');
-      } else {
-        ref.read(budgetNotifierProvider.notifier).updateBudget(budget);
-        _showSuccessSnackBar('Budget updated successfully');
-      }
-      Navigator.pop(context);
+      widget.onSave(budget);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          widget.budget == null ? AppString.addBudget : AppString.editBudget,
+    return AlertDialog(
+      title: Text(widget.budget == null ? AppString.addBudget : AppString.editBudget),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              decoration: const InputDecoration(
+                labelText: AppString.category,
+                border: OutlineInputBorder(),
+              ),
+              items: AppString.budgeCategories.map((category) {
+                return DropdownMenuItem(value: category, child: Text(category));
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _amountController,
+              decoration: const InputDecoration(
+                labelText: AppString.amount,
+                prefixText: '\$',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+              ],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter an amount';
+                }
+                if (double.tryParse(value) == null ||
+                    double.parse(value) <= 0) {
+                  return 'Please enter a valid amount';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            CheckboxListTile(
+              title: const Text(AppString.holidayBudget),
+              value: _isHoliday,
+              onChanged: (value) {
+                setState(() {
+                  _isHoliday = value ?? false;
+                });
+              },
+            ),
+          ],
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            children: [
-              SizedBox(height: 40.h),
-              Text(
-                'Widget: ${widget.budget?.category} ${widget.budget?.amount}',
-                style: TextStyle(color: Colors.white),
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    SizedBox(height: 16.h),
-                    DropdownButtonFormField<String>(
-                      padding: const EdgeInsets.only(top: 2.0),
-                      value: _selectedCategory,
-                      decoration: InputDecoration(
-                        labelText: AppString.category,
-                        labelStyle: GoogleFonts.inter(
-                          fontSize: 16.sp,
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        border: OutlineInputBorder(),
-                        fillColor: AppColors.surface,
-                      ),
-                      dropdownColor: AppColors.background,
-                      style: GoogleFonts.inter(
-                        fontSize: 16.sp,
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      items: AppString.budgeCategories.map((category) {
-                        return DropdownMenuItem(
-                          value: category,
-                          child: Text(category),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedCategory = value!;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16.h),
-
-                    AppTextField(
-                      controller: _amountController,
-                      labelText: AppString.amount,
-                      hintText: AppString.amountHint,
-                      keyboardType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-
-                    AppButton(
-                      onPressed: () => saveBudget(),
-                      text: AppString.add,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+      actions: [
+        AppTextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          text: AppString.cancel,
         ),
-      ),
+        AppButton(
+          width: 80.w,
+          onPressed: () => _saveBudget(),
+          text: AppString.save,
+        ),
+      ],
     );
   }
 }
-
 
 

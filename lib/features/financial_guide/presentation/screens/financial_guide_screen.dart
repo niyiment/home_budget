@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/constants/index.dart';
 
 class FinancialGuideScreen extends StatelessWidget {
   const FinancialGuideScreen({super.key});
@@ -6,6 +9,7 @@ class FinancialGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(title: const Text('Financial Guide')),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -67,6 +71,7 @@ class FinancialGuideScreen extends StatelessWidget {
     List<String> tips,
   ) {
     return Card(
+      elevation: 2,
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -75,28 +80,26 @@ class FinancialGuideScreen extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(description, style: TextStyle(color: Colors.grey[600])),
-            const SizedBox(height: 12),
-            ...tips
-                .map(
-                  (tip) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          '• ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(child: Text(tip)),
-                      ],
+            SizedBox(height: 12.h),
+            ...tips.map(
+              (tip) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '• ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                )
-                .toList(),
+                    Expanded(child: Text(tip)),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

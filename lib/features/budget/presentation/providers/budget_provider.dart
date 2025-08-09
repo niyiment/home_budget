@@ -8,13 +8,7 @@ final budgetRepositoryProvider = Provider<BudgetRepository>(
   (ref) => BudgetRepositoryImpl(),
 );
 
-final budgetListProvider = FutureProvider<List<Budget>>((ref) async {
-  final repo = ref.read(budgetRepositoryProvider);
-
-  return await repo.getBudgets();
-});
-
-final budgetNotifierProvider =
+final budgetsProvider =
     StateNotifierProvider<BudgetNotifier, AsyncValue<List<Budget>>>((ref) {
       final repository = ref.watch(budgetRepositoryProvider);
       return BudgetNotifier(repository);

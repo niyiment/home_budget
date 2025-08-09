@@ -21,7 +21,7 @@ class LoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return showBackground
         ? Container(
-            color: (backgroundColor ?? Colors.black).withOpacity(0.5),
+            color: (backgroundColor ?? Colors.black).withValues(alpha: 0.5),
             child: Center(child: _buildIndicator()),
           )
         : _buildIndicator();
@@ -35,7 +35,7 @@ class LoadingIndicator extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10.r,
             spreadRadius: 0,
             offset: const Offset(0, 4),

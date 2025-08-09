@@ -7,40 +7,29 @@ import 'package:home_budget/features/budget/presentation/screens/budget_form.dar
 
 import '../../../../common/widgets/app_button.dart';
 import '../../../../core/constants/index.dart';
+import '../../domain/entities/budget.dart';
+import '../widgets/budget_card.dart';
 
-class BudgetList extends ConsumerWidget {
-  const BudgetList({super.key});
 
-  void _deleteBudget(BuildContext context, WidgetRef ref, int budgetId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(AppString.deleteBudget),
-        content: const Text(AppString.deleteMessage),
-        actions: [
-          AppTextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            text: AppString.cancel,
-          ),
-          AppTextButton(
-            onPressed: () {
-              ref.read(budgetNotifierProvider.notifier).deleteBudget(budgetId);
-              Navigator.of(context).pop();
-            },
-            text: AppString.delete,
-          ),
-        ],
-      ),
-    );
-  }
+
+class BudgetScreen extends ConsumerWidget {
+  const BudgetScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final budgetsAsync = ref.watch(budgetListProvider);
+    final budgetsAsync = ref.watch(budgetsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(AppString.budgetTile)),
+      appBar: AppBar(
+        title: Text(AppString.budgetTile),
+        actions: [
+          IconButton(
+            onPressed: () => _showAddBudgetDialog(context, ref),
+            icon: Icon(Icons.add),
+          ),
+        ],
+      ),
       body: budgetsAsync.when(
         data: (budgets) {
           if (budgets.isEmpty) {
@@ -62,84 +51,82 @@ class BudgetList extends ConsumerWidget {
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.all(16),
             itemCount: budgets.length,
             itemBuilder: (context, index) {
               final budget = budgets[index];
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: budget.isHoliday
-                      ? Colors.orange
-                      : Theme.of(context).primaryColor,
-                  child: Icon(
-                    budget.isHoliday
-                        ? Icons.celebration
-                        : Icons.account_balance_wallet,
-                    color: Colors.white,
-                  ),
-                ),
-                title: Text(
-                  budget.category,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                subtitle: Text(
-                  budget.amount.toStringAsFixed(2),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                trailing: PopupMenuButton(
-                  icon: Icon(Icons.more_vert, color: AppColors.textPrimary),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: const Row(
-                        children: [
-                          Icon(Icons.edit),
-                          SizedBox(width: 8),
-                          Text('Edit'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: const Row(
-                        children: [
-                          Icon(Icons.delete, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('Delete', style: TextStyle(color: Colors.red)),
-                        ],
-                      ),
-                    ),
-                  ],
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BudgetFormScreen(budget: budget),
-                        ),
-                      );
-                    } else if (value == 'delete') {
-                      _deleteBudget(context, ref, budget.id!);
-                    }
-                  },
-                ),
+              return BudgetCard(
+                budget: budget,
+                onTap: () => _showEditBudgetDialog(context, ref, budget),
+                onDelete: () => _deleteBudget(context, ref, budget.id!),
               );
             },
           );
         },
         loading: () => Center(child: AppLoading()),
-        error: (error, _) => Center(child: Text('Error $error')),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.accent,
-        onPressed: () => Navigator.pushNamed(context, AppRoute.budgetForm),
-        child: const Icon(Icons.add),
+        error: (error, _) => Center(
+          child: Column(
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              SizedBox(height: 16.h),
+              Text(AppString.budgetErrorMessage),
+            ],
+          ),
+        ),
       ),
     );
   }
+
+  void _showAddBudgetDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => BudgetFormScreen(
+        onSave: (budget) {
+          ref.read(budgetsProvider.notifier).addBudget(budget);
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _showEditBudgetDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Budget budget,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => BudgetFormScreen(
+        budget: budget,
+        onSave: (updatedBudget) {
+          ref.read(budgetsProvider.notifier).updateBudget(updatedBudget);
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _deleteBudget(BuildContext context, WidgetRef ref, int budgetId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(AppString.deleteBudget),
+        content: const Text(AppString.deleteMessage),
+        actions: [
+          AppTextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            text: AppString.cancel,
+          ),
+          AppTextButton(
+            onPressed: () {
+              ref.read(budgetsProvider.notifier).deleteBudget(budgetId);
+              Navigator.of(context).pop();
+            },
+            text: AppString.delete,
+          ),
+        ],
+      ),
+    );
+  }
+  
 }

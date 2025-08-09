@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:home_budget/core/constants/index.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -51,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    Navigator.pushNamed(context, AppRoute.home);
+    Navigator.pushReplacementNamed(context, AppRoute.home);
   }
 
   @override
@@ -78,31 +79,18 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Logo Animation
-                        Container(
-                          width: 120.w,
-                          height: 120.w,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: AppColors.primaryGradient,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.3),
-                                blurRadius: 20.r,
-                                spreadRadius: 5.r,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.book,
-                            size: 60.sp,
-                            color: Colors.white,
-                          ),
+                        // Lottie animation
+                        Lottie.asset(
+                          'assets/json/animation.json',
+                          controller: _animationController,
+                          onLoaded: (composition) {
+                            _animationController
+                              ..duration = composition.duration
+                              ..forward();
+                          },
+                          width: 250.w,
+                          height: 250.h,
                         ),
-
-                        SizedBox(height: 32.h),
-
                         // App Name
                         ShaderMask(
                           shaderCallback: (bounds) =>
@@ -139,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen>
                           child: CircularProgressIndicator(
                             strokeWidth: 3.w,
                             valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.primary,
+                              AppColors.backgroundLight,
                             ),
                           ),
                         ),
@@ -148,7 +136,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                         // Loading Text
                         Text(
-                          'Manage your finances with ease',
+                          AppString.loadingText,
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
                             color: AppColors.textTertiary,
@@ -173,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.background, AppColors.backgroundLight],
+          colors: [AppColors.background, AppColors.surface],
         ),
       ),
       child: Stack(
@@ -191,7 +179,7 @@ class _SplashScreenState extends State<SplashScreen>
                   end: Alignment.bottomRight,
                   colors: [
                     AppColors.primary.withValues(alpha: 0.1),
-                    AppColors.primaryDark.withValues(alpha: 0.05),
+                    AppColors.primaryDark.withValues(alpha: 0.5),
                   ],
                 ),
               ),
@@ -210,7 +198,7 @@ class _SplashScreenState extends State<SplashScreen>
                   end: Alignment.bottomRight,
                   colors: [
                     AppColors.secondary.withValues(alpha: 0.1),
-                    AppColors.secondaryDark.withValues(alpha: 0.05),
+                    AppColors.secondaryDark.withValues(alpha: 0.5),
                   ],
                 ),
               ),

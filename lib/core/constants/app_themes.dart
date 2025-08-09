@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
 class AppTheme {
-static ThemeData get lightTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
       brightness: Brightness.light,
       primarySwatch: _createMaterialColor(AppColors.primary),
@@ -20,13 +19,14 @@ static ThemeData get lightTheme {
       textTheme: _textTheme(Colors.black87),
       appBarTheme: AppBarTheme(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         foregroundColor: Colors.black87,
         titleTextStyle: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         ),
+        centerTitle: true,
       ),
       elevatedButtonTheme: _elevatedButtonTheme,
       inputDecorationTheme: _inputDecorationTheme(false),
